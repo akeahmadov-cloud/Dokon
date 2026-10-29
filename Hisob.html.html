@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Do‘kon hisobi</title>
+<style>
+:root{--bg:#f3f5f1;--card:#fff;--ink:#17231c;--mut:#66736b;--line:#dfe5df;--acc:#1f6b4a;--acc2:#e8f2ec;--red:#b3402f;--blue:#2b5b9e;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101613;--card:#18211c;--ink:#e8efe9;--mut:#93a39a;--line:#2a372f;--acc:#4fbf8a;--acc2:#1d3027;--red:#e07a68;--blue:#7aa8e6}}
+:root[data-theme="dark"]{--bg:#101613;--card:#18211c;--ink:#e8efe9;--mut:#93a39a;--line:#2a372f;--acc:#4fbf8a;--acc2:#1d3027;--red:#e07a68;--blue:#7aa8e6}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 "Trebuchet MS",system-ui,sans-serif;padding-bottom:84px}
+h1{font:700 22px Georgia,serif;margin:0}
+header{padding:16px;display:flex;justify-content:space-between;align-items:center}
+main{padding:0 14px;max-width:640px;margin:auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.big{font:700 34px Georgia,serif;color:var(--acc)}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.stat{font-size:13px;color:var(--mut)}.stat b{display:block;font-size:18px;color:var(--ink)}
+input,select{width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit;margin-bottom:8px}
+button{font:inherit;border:0;border-radius:8px;padding:11px 14px;background:var(--acc);color:#fff;font-weight:700;cursor:pointer;width:100%}
+button.sec{background:var(--acc2);color:var(--acc)}
+button.sm{width:auto;padding:5px 10px;font-size:13px;background:transparent;color:var(--red)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--card);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
+nav button{background:transparent;color:var(--mut);font-size:13px;padding:8px 2px}
+nav button.on{color:var(--acc);background:var(--acc2)}
+.item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border:0}.item small{color:var(--mut);display:block}
+.in{color:var(--acc)}.out{color:var(--red)}
+.empty{color:var(--mut);text-align:center;padding:18px 0}
+.tab{display:none}.tab.on{display:block}
+</style>
+</head>
+<body>
+<header><h1>Do‘kon hisobi</h1><span class="stat" id="today"></span></header>
+<main>
+
+<section class="tab on" id="t-home">
+  <div class="card"><div class="stat">Bugungi sof foyda</div><div class="big" id="profit">0</div>
+    <div class="row" style="margin-top:8px"><div class="stat">Kunlik tushum<b id="sales">0</b></div><div class="stat">Foyda<b id="gross">0</b></div><div class="stat">Xarajat<b id="exp">0</b></div></div>
+    <div class="row" style="margin-top:8px"><div class="stat">Ombor qoldig‘i<b id="stock">0</b></div><div class="stat">Menga qarz<b id="debt">0</b></div><div class="stat">Men qarzman<b id="debt2">0</b></div></div></div>
+  <div class="card"><b>Savat (obor)</b><br><br>
+    <select id="qs"></select>
+    <button class="sec" id="scq" style="margin-bottom:8px">Skanerlab qo‘shish (miqdor o‘zi hisoblanadi)</button>
+    <div class="row"><input id="qq" type="number" min="0" step="any" value="1" inputmode="decimal"><button id="qb">Savatga</button></div>
+    <div id="cart"></div>
+    <div class="row" style="margin:8px 0"><div class="stat">Jami<b id="ct">0</b></div><div class="stat">Foyda<b id="cp">0</b></div></div>
+    <button id="cf">Sotuvni yakunlash</button></div>
+  <div class="card"><b>Bugungi amallar</b><div id="todayList"></div></div>
+</section>
+
+<section class="tab" id="t-prod">
+  <div class="card"><b>Yangi mahsulot</b><br><br>
+    <input id="pn" placeholder="Nomi">
+    <div class="row"><input id="pc" placeholder="Shtrix-kod / QR kod" inputmode="numeric"><button class="sec" id="scp" style="flex:0 0 auto;width:auto;margin-bottom:8px">Skaner</button></div>
+    <select id="pu"><option>dona</option><option>kg</option><option>gm</option><option>metr</option></select>
+    <div class="row"><input id="pb" type="number" step="any" placeholder="Tan narx (1 birlik)" inputmode="decimal"><input id="ps" type="number" step="any" placeholder="Sotuv narx (1 birlik)" inputmode="decimal"></div>
+    <input id="pq" type="number" step="any" placeholder="Ombordagi qoldiq" inputmode="decimal">
+    <button id="pa">Mahsulot qo‘shish</button></div>
+  <div class="card"><b>Ombor</b><div id="prodList"></div></div>
+</section>
+
+<section class="tab" id="t-debt">
+  <div class="card"><b>Yangi qarz</b><br><br>
+    <select id="dt"><option value="m">Mijoz menga qarz</option><option value="o">Men qarzman</option></select>
+    <input id="dn" placeholder="Ism">
+    <input id="da" type="number" placeholder="Summa" inputmode="numeric">
+    <button id="db">Qarz yozish</button></div>
+  <div class="card"><b>Qarz-obor daftari</b><div id="debtList"></div></div>
+</section>
+
+<section class="tab" id="t-exp">
+  <div class="card"><b>Xarajat qo‘shish</b><br><br>
+    <input id="en" placeholder="Nima uchun? (ijara, svet...)">
+    <input id="ea" type="number" placeholder="Summa" inputmode="numeric">
+    <button id="eb">Xarajatni saqlash</button></div>
+  <div class="card"><b>Hisobot (oxirgi 7 kun)</b><div id="rep"></div></div>
+  <button class="sec" id="exp-csv">Ma’lumotni yuklab olish (nusxa)</button>
+</section>
+</main>
+
+<div id="ov" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:20;padding:16px;padding-top:calc(16px + env(safe-area-inset-top,0px))"><div id="rd" style="max-width:420px;margin:auto"></div><p id="rmsg" style="color:#fff;text-align:center"></p><button id="rc" style="max-width:420px;display:block;margin:auto">Yopish</button></div>
+<nav>
+  <button class="on" data-t="home">Asosiy</button>
+  <button data-t="prod">Ombor</button>
+  <button data-t="debt">Qarz</button>
+  <button data-t="exp">Xarajat</button>
+</nav>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+<script>
+var KEY="dokon-hisob-v1",S={products:[],sales:[],expenses:[],debts:[]};
+try{var raw=localStorage.getItem(KEY);if(raw)S=JSON.parse(raw)}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function $(id){return document.getElementById(id)}
+function fmt(n){return Math.round(n).toLocaleString("ru-RU").replace(/\u00a0/g," ")+" so‘m"}
+function day(t){return new Date(t).toISOString().slice(0,10)}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+var td=function(){return new Date().toISOString().slice(0,10)};
+$("today").textContent=new Date().toLocaleDateString("uz-UZ",{day:"numeric",month:"long"});
+
+function render(){
+  var t=td(),ts=S.sales.filter(function(x){return day(x.t)==t}),te=S.expenses.filter(function(x){return day(x.t)==t});
+  var sales=0,cost=0,ex=0;
+  ts.forEach(function(x){sales+=x.price*x.qty;cost+=x.cost*x.qty});te.forEach(function(x){ex+=x.amount});
+    var dm=0,dq=0,sv=0;S.debts.forEach(function(d){if(d.type=="o")dq+=d.amount;else dm+=d.amount});S.products.forEach(function(x){sv+=x.cost*x.qty});
+  $("sales").textContent=fmt(sales);$("gross").textContent=fmt(sales-cost);$("exp").textContent=fmt(ex);$("debt").textContent=fmt(dm);$("debt2").textContent=fmt(dq);$("stock").textContent=fmt(sv);
+  var p=sales-cost-ex;$("profit").textContent=fmt(p);$("profit").style.color=p<0?"var(--red)":"var(--acc)";
+
+  $("qs").innerHTML=S.products.length?S.products.map(function(x,i){return'<option value="'+i+'">'+esc(x.name)+" — "+fmt(x.sell)+"/"+x.unit+" (qoldiq "+x.qty+" "+x.unit+")</option>"}).join(""):'<option>Avval mahsulot qo‘shing</option>';
+
+  var list=ts.map(function(x){return{t:x.t,n:x.name+" × "+x.qty+" "+(x.unit||"dona"),a:x.price*x.qty,k:"in",f:(x.price-x.cost)*x.qty}}).concat(te.map(function(x){return{t:x.t,n:x.name,a:x.amount,k:"out"}})).sort(function(a,b){return b.t-a.t});
+  $("todayList").innerHTML=list.length?list.map(function(x){return'<div class="item"><span>'+esc(x.n)+'<small>'+new Date(x.t).toLocaleTimeString("uz-UZ",{hour:"2-digit",minute:"2-digit"})+(x.k=="in"?" · foyda "+fmt(x.f):"")+'</small></span><b class="'+x.k+'">'+(x.k=="in"?"+":"−")+fmt(x.a)+'</b></div>'}).join(""):'<div class="empty">Bugun hali amal yo‘q. Birinchi sotuvni yozing.</div>';
+
+  $("prodList").innerHTML=S.products.length?S.products.map(function(x,i){return'<div class="item"><span>'+esc(x.name)+'<small>Tan '+fmt(x.cost)+' · Sotuv '+fmt(x.sell)+' · foyda '+fmt(x.sell-x.cost)+'/'+x.unit+(x.code?' · kod '+esc(x.code):'')+'</small></span><span><b>'+x.qty+' '+x.unit+'</b> <button class="sm" data-act="rp" data-i="'+i+'">O‘chirish</button></span></div>'}).join(""):'<div class="empty">Ombor bo‘sh. Mahsulot qo‘shing.</div>';
+
+  $("debtList").innerHTML=S.debts.length?S.debts.map(function(x,i){return'<div class="item"><span>'+esc(x.name)+'<small>'+day(x.t)+' · '+(x.type=="o"?"men qarzman":"menga qarz")+'</small></span><span><b class="'+(x.type=="o"?"out":"in")+'">'+fmt(x.amount)+'</b> <button class="sm" data-act="pd" data-i="'+i+'" style="color:var(--acc)">Yopish</button></span></div>'}).join(""):'<div class="empty">Qarzdor yo‘q.</div>';
+
+  var h="";for(var k=0;k<7;k++){var d=new Date(Date.now()-k*864e5).toISOString().slice(0,10),s=0,c=0,e=0;
+    S.sales.forEach(function(x){if(day(x.t)==d){s+=x.price*x.qty;c+=x.cost*x.qty}});S.expenses.forEach(function(x){if(day(x.t)==d)e+=x.amount});
+    h+='<div class="item"><span>'+d+'<small>Savdo '+fmt(s)+' · Xarajat '+fmt(e)+'</small></span><b class="'+((s-c-e)<0?"out":"in")+'">'+fmt(s-c-e)+'</b></div>'}
+  $("rep").innerHTML=h;
+}
+
+$("qb").onclick=function(){var i=+$("qs").value,q=+$("qq").value,p=S.products[i];
+  if(!p||!(q>0))return;if(q>p.qty){alert("Omborda faqat "+p.qty+" "+p.unit+" bor");return}
+  p.qty=Math.round((p.qty-q)*1000)/1000;S.sales.push({t:Date.now(),name:p.name,unit:p.unit,qty:q,price:p.sell,cost:p.cost});save();$("qq").value=1;render()};
+$("pa").onclick=function(){var n=$("pn").value.trim(),b=+$("pb").value,s=+$("ps").value,q=+$("pq").value;
+  if(!n||!s){alert("Nomi va sotuv narxini kiriting");return}
+  var cd=$("pc").value.trim();if(cd&&S.products.some(function(x){return x.code==cd})){alert("Bu kod bilan mahsulot allaqachon bor");return}
+  S.products.push({name:n,code:cd,unit:$("pu").value,cost:b,sell:s,qty:q});["pn","pc","pb","ps","pq"].forEach(function(i){$(i).value=""});save();render()};
+$("db").onclick=function(){var n=$("dn").value.trim(),a=+$("da").value;if(!n||!a){alert("Ism va summani kiriting");return}
+  S.debts.push({t:Date.now(),name:n,amount:a,type:$("dt").value});$("dn").value=$("da").value="";save();render()};
+$("eb").onclick=function(){var n=$("en").value.trim(),a=+$("ea").value;if(!n||!a){alert("Sabab va summani kiriting");return}
+  S.expenses.push({t:Date.now(),name:n,amount:a});$("en").value=$("ea").value="";save();render()};
+document.addEventListener("click",function(e){var b=e.target.closest("[data-act]");if(!b)return;var i=+b.dataset.i;
+  if(b.dataset.act=="rp"&&confirm("Mahsulot o‘chirilsinmi?"))S.products.splice(i,1);
+  if(b.dataset.act=="pd")S.debts.splice(i,1);save();render()});
+document.querySelectorAll("nav button").forEach(function(b){b.onclick=function(){
+  document.querySelectorAll("nav button,.tab").forEach(function(x){x.classList.remove("on")});
+  b.classList.add("on");$("t-"+b.dataset.t).classList.add("on")}});
+$("exp-csv").onclick=function(){var t=JSON.stringify(S);if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){alert("Ma’lumot nusxalandi")},function(){prompt("Nusxa oling:",t)})}else prompt("Nusxa oling:",t)};
+var sc=null;
+function scan(cb,keep){var lastC="",lastT=0;
+  if(typeof Html5Qrcode=="undefined"){alert("Skaner yuklanmadi. Internetni tekshiring.");return}
+  $("ov").style.display="block";$("rmsg").textContent="Kodni kameraga ko‘rsating";
+  sc=new Html5Qrcode("rd");
+  sc.start({facingMode:"environment"},{fps:10,qrbox:{width:240,height:160}},function(t){if(keep){var n=Date.now();if(t==lastC&&n-lastT<2000)return;lastC=t;lastT=n;cb(t)}else{stopScan();cb(t)}},function(){}).catch(function(){$("rmsg").textContent="Kamera ochilmadi: ruxsat bering yoki kodni qo‘lda yozing."});
+}
+function stopScan(){$("ov").style.display="none";if(sc){var c=sc;sc=null;c.stop().then(function(){c.clear()}).catch(function(){})}}
+$("rc").onclick=stopScan;
+$("scp").onclick=function(){scan(function(t){var p=S.products.find(function(x){return x.code==t});if(p){p.qty=Math.round((p.qty+1)*1000)/1000;save();render();alert(p.name+": qoldiq +1, endi "+p.qty+" "+p.unit)}else $("pc").value=t})};
+var C=[];
+function addCart(i,q){var p=S.products[i];if(!p||!(q>0))return;var l=C.find(function(x){return x.i==i});if(l)l.q=Math.round((l.q+q)*1000)/1000;else C.push({i:i,q:q});drawCart()}
+function drawCart(){var t=0,f=0;$("cart").innerHTML=C.length?C.map(function(l,k){var p=S.products[l.i];t+=p.sell*l.q;f+=(p.sell-p.cost)*l.q;return'<div class="item"><span>'+esc(p.name)+'<small>'+fmt(p.sell)+' / '+p.unit+'</small></span><span><input type="number" step="any" value="'+l.q+'" data-k="'+k+'" class="cq" style="width:80px;margin:0"> '+p.unit+' <button class="sm" data-act="rc" data-i="'+k+'">×</button></span></div>'}).join(""):'<div class="empty">Savat bo‘sh. Skanerlang yoki mahsulot tanlab "Savatga" bosing.</div>';$("ct").textContent=fmt(t);$("cp").textContent=fmt(f)}
+$("scq").onclick=function(){scan(function(t){var i=S.products.findIndex(function(x){return x.code==t});if(i<0){$("rmsg").textContent="Topilmadi: "+t;return}addCart(i,1);var p=S.products[i],l=C.find(function(x){return x.i==i});$("rmsg").textContent=p.name+" — "+l.q+" "+p.unit+" | Jami "+$("ct").textContent},true)};
+$("qb").onclick=function(){addCart(+$("qs").value,+$("qq").value||1);$("qq").value=1};
+document.addEventListener("click",function(e){var b=e.target.closest('[data-act="rc"]');if(b){C.splice(+b.dataset.i,1);drawCart()}});
+document.addEventListener("change",function(e){if(e.target.classList.contains("cq")){var l=C[+e.target.dataset.k];if(l){l.q=+e.target.value;if(!(l.q>0))C.splice(+e.target.dataset.k,1);drawCart()}}});
+$("cf").onclick=function(){if(!C.length)return;for(var k=0;k<C.length;k++){var p=S.products[C[k].i];if(C[k].q>p.qty){alert(p.name+": omborda faqat "+p.qty+" "+p.unit+" bor");return}}
+  C.forEach(function(l){var p=S.products[l.i];p.qty=Math.round((p.qty-l.q)*1000)/1000;S.sales.push({t:Date.now(),name:p.name,unit:p.unit,qty:l.q,price:p.sell,cost:p.cost})});C=[];save();render();drawCart()};
+drawCart();
+render();
+</script>
+</body>
+</html>
